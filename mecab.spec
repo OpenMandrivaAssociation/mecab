@@ -13,7 +13,6 @@ License:	LGPL
 Group:		System/Internationalization
 URL:		http://mecab.sourceforge.jp/
 Source0:	http://prdownloads.sourceforge.jp/mecab/18364/%{name}-%{version}.tar.bz2
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 Requires:		%{libname} = %{version}
 BuildRequires:		automake1.8
 
