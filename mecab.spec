@@ -4,7 +4,7 @@
 Name:		mecab
 Summary:	Yet Another Part-of-Speech and Morphological Analyzer
 Version:	0.98
-Release:	%mkrel 1
+Release:	%mkrel 2
 License:	LGPLv2+
 Group:		System/Internationalization
 URL:		http://mecab.sourceforge.jp/
@@ -29,12 +29,12 @@ Summary:	Headers of %{name} for development
 Group:		Development/C
 Requires:	%{libname} = %{version}
 Provides:	%{name}-devel = %{version}-%{release}
+Conflicts:	%{name} < 0.98-2
 Obsoletes:	libmecab0-devel
 Obsoletes:	%{_lib}mecab1-devel
 
 %description -n %{develname}
 mecab development package.
-
 
 %prep
 %setup -q
@@ -50,9 +50,6 @@ rm -rf $RPM_BUILD_ROOT
 # multiarch policy
 %multiarch_binaries $RPM_BUILD_ROOT%{_bindir}/mecab-config
 
-# remove multiarch-dispatch to avoid conflict
-rm -f %{buildroot}/%{_bindir}/multiarch-dispatch
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -66,8 +63,6 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root)
 %doc AUTHORS COPYING README doc/
-%multiarch %{multiarch_bindir}/mecab-config
-%{_bindir}/mecab-config
 %{_bindir}/mecab
 %{_mandir}/*/mecab.1*
 %config(noreplace) %{_sysconfdir}/mecabrc
@@ -83,6 +78,8 @@ rm -rf $RPM_BUILD_ROOT
 %files -n %{develname}
 %defattr(-,root,root)
 %doc COPYING
+%multiarch %{multiarch_bindir}/mecab-config
+%{_bindir}/mecab-config
 %{_includedir}/*
 %{_libdir}/*.a
 %{_libdir}/*.la
