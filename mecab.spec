@@ -1,32 +1,25 @@
-%define version		0.96
-%define release		%mkrel 4
-
-%define libname_orig lib%{name}
-%define libname %mklibname %{name}1
+%define libname %mklibname %{name} 1
 %define develname %mklibname -d %{name}
 
 Name:		mecab
 Summary:	Yet Another Part-of-Speech and Morphological Analyzer
-Version:	%{version}
-Release:	%{release}
-License:	LGPL
+Version:	0.98
+Release:	%mkrel 1
+License:	LGPLv2+
 Group:		System/Internationalization
 URL:		http://mecab.sourceforge.jp/
-Source0:	http://prdownloads.sourceforge.jp/mecab/18364/%{name}-%{version}.tar.bz2
+Source0:	http://sourceforge.net/projects/mecab/files/%{name}/%{version}/%{name}-%{version}.tar.gz
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root
-Requires:		%{libname} = %{version}
-BuildRequires:		automake1.8
+Requires:	%{libname} = %{version}
 
 %description
 Yet Another Part-of-Speech and Morphological Analyzer.
 
-
 %package -n 	%{libname}
 Summary:	Mecab library
 Group:		System/Internationalization
-Provides:	%{libname_orig} = %{version}-%{release}
 Obsoletes:	libmecab0
-Provides:	libmecab0
+Conflicts:	%{_lib}name-devel < 0.98
 
 %description -n %{libname}
 mecab library.
@@ -36,10 +29,8 @@ Summary:	Headers of %{name} for development
 Group:		Development/C
 Requires:	%{libname} = %{version}
 Provides:	%{name}-devel = %{version}-%{release}
-Provides:	%{libname_orig}-devel = %{version}-%{release}
 Obsoletes:	libmecab0-devel
-Provides:	libmecab0-devel
-Obsoletes:	%{libname}-devel
+Obsoletes:	%{_lib}mecab1-devel
 
 %description -n %{develname}
 mecab development package.
@@ -72,7 +63,6 @@ rm -rf $RPM_BUILD_ROOT
 %postun -n %{libname} -p /sbin/ldconfig
 %endif
 
-
 %files
 %defattr(-,root,root)
 %doc AUTHORS COPYING README doc/
@@ -85,7 +75,8 @@ rm -rf $RPM_BUILD_ROOT
 %files -n %{libname}
 %defattr(-, root, root)
 %doc COPYING
-%{_libdir}/*.so.1.0.0
+%{_libdir}/*.so.1
+%{_libdir}/*.so.1.*
 %attr(755, root, root) %{_libdir}/mecab
 %{_libdir}/mecab/*
 
@@ -96,6 +87,3 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*.a
 %{_libdir}/*.la
 %{_libdir}/*.so
-%{_libdir}/*.so.1
-
-
