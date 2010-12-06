@@ -4,7 +4,7 @@
 Name:		mecab
 Summary:	Yet Another Part-of-Speech and Morphological Analyzer
 Version:	0.98
-Release:	%mkrel 2
+Release:	%mkrel 3
 License:	LGPLv2+
 Group:		System/Internationalization
 URL:		http://mecab.sourceforge.jp/
