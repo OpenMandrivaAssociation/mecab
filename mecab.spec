@@ -1,86 +1,79 @@
-%define libname %mklibname %{name} 1
+%define major 2
+%define libname %mklibname %{name} %{major}
 %define develname %mklibname -d %{name}
 
 Name:		mecab
 Summary:	Yet Another Part-of-Speech and Morphological Analyzer
-Version:	0.98
-Release:	%mkrel 3
+Version:	0.994
+Release:	1
 License:	LGPLv2+
 Group:		System/Internationalization
 URL:		http://mecab.sourceforge.jp/
 Source0:	http://sourceforge.net/projects/mecab/files/%{name}/%{version}/%{name}-%{version}.tar.gz
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root
-Requires:	%{libname} = %{version}
+Conflicts:	%{_lib}mecab1 < 0.99
 
 %description
 Yet Another Part-of-Speech and Morphological Analyzer.
 
 %package -n 	%{libname}
-Summary:	Mecab library
-Group:		System/Internationalization
-Obsoletes:	libmecab0
-Conflicts:	%{_lib}name-devel < 0.98
+Summary:	Mecab shared library
+Group:		System/Libraries
 
 %description -n %{libname}
-mecab library.
+Mecab shared library.
 
 %package -n	%{develname}
 Summary:	Headers of %{name} for development
 Group:		Development/C
-Requires:	%{libname} = %{version}
+Requires:	%{libname} = %{version}-%{release}
 Provides:	%{name}-devel = %{version}-%{release}
-Conflicts:	%{name} < 0.98-2
-Obsoletes:	libmecab0-devel
-Obsoletes:	%{_lib}mecab1-devel
 
 %description -n %{develname}
 mecab development package.
 
 %prep
 %setup -q
+mv doc/doxygen .
+find . -name \*.cpp -print0 | xargs -0 chmod 0644
+find . -name \*.h -print0 | xargs -0 chmod 0644
+
+# compiler flags fix
+sed -i.flags \
+	-e '/-O3/s|CFLAGS=\"\(.*\)\"|CFLAGS=\${CFLAGS:-\1}|' \
+	-e '/-O3/s|CXXFLAGS=\"\(.*\)\"|CXXFLAGS=\${CFLAGS:-\1}|' \
+	-e '/MECAB_LIBS/s|-lstdc++||' \
+	configure
+
+# multilib change
+sed -i.multilib \
+	-e 's|@prefix@/lib/mecab|%{_libdir}/mecab|' \
+	mecab-config.in mecabrc.in
 
 %build
 %configure2_5x
+# remove rpath from libtool
+sed -i.rpath \
+	-e 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' \
+	-e 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' \
+	libtool
 %make
 
 %install
-rm -rf $RPM_BUILD_ROOT
 %makeinstall_std
 
-# multiarch policy
-%multiarch_binaries $RPM_BUILD_ROOT%{_bindir}/mecab-config
-
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-%if %mdkversion < 200900
-%post -n %{libname} -p /sbin/ldconfig
-%endif
-%if %mdkversion < 200900
-%postun -n %{libname} -p /sbin/ldconfig
-%endif
-
 %files
-%defattr(-,root,root)
 %doc AUTHORS COPYING README doc/
 %{_bindir}/mecab
 %{_mandir}/*/mecab.1*
 %config(noreplace) %{_sysconfdir}/mecabrc
+%{_libdir}/mecab
 
 %files -n %{libname}
-%defattr(-, root, root)
-%doc COPYING
-%{_libdir}/*.so.1
-%{_libdir}/*.so.1.*
-%attr(755, root, root) %{_libdir}/mecab
-%{_libdir}/mecab/*
+%{_libdir}/*.so.%{major}*
 
 %files -n %{develname}
-%defattr(-,root,root)
-%doc COPYING
-%multiarch %{multiarch_bindir}/mecab-config
 %{_bindir}/mecab-config
 %{_includedir}/*
 %{_libdir}/*.a
-%{_libdir}/*.la
 %{_libdir}/*.so
+
