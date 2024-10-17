@@ -8,7 +8,7 @@ Version:	0.994
 Release:	2
 License:	LGPLv2+
 Group:		System/Internationalization
-URL:		http://mecab.sourceforge.jp/
+URL:		https://mecab.sourceforge.jp/
 Source0:	http://sourceforge.net/projects/mecab/files/%{name}/%{version}/%{name}-%{version}.tar.gz
 Conflicts:	%{_lib}mecab1 < 0.99
 
